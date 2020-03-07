@@ -6,13 +6,15 @@
 #
 #    http://shiny.rstudio.com/
 #
-
+ 
 library('shinydashboard')
 library('shiny')
 library('scales')
 library('ggplot2')
 library('magrittr')
 library('dplyr')
+library('DT')
+library('leaflet')
 
 title <- tags$a(href='http://www.liawning.com/',
                  tags$img(src='lia-logo.jpg', width = 230, height = 50), 
@@ -21,11 +23,11 @@ title <- tags$a(href='http://www.liawning.com/',
 
 sidebar <- dashboardSidebar(
     sidebarMenu(
-        menuItem("Home", tabName = "home"),
         menuItem("Overview", tabName = "dashboard", icon = icon("globe")),
         menuItem("Monthly Sales", tabName = "sales", icon = icon("chart-line")),
         menuItem("High Performers", tabName = "hp", icon = icon("fire")),
-        menuItem("Map", tabName = "map", icon = icon("map-pin"))
+        menuItem("Map", tabName = "map", icon = icon("map-pin")),
+        menuItem("Table", tabName = "data_table_page", icon = icon("table"))
     )
 )
 
@@ -80,7 +82,14 @@ body <- dashboardBody(
               column(width = 6,
                      plotOutput('hp_bar2'))
                 
-                )
+                ),
+        tabItem(tabName = "map",
+                h2("Map of Sales by town"),
+                leafletOutput('sales_map'),
+                selectInput('town_map_selection', 'Town', choices = zip_list)
+                ),
+        tabItem(tabName = "data_table_page",
+                DTOutput('data_table'))
     )
 )
 

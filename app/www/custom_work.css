@@ -1,6 +1,5 @@
  .skin-blue .main-header .navbar  {
     background-color: #FF511E;
-    /*border-radius: 25px;*/
     border-color:#3d3d3d;
 	  border-style:solid;
 }
@@ -13,20 +12,19 @@
 }
 
 
-.logo {
-
-	/*border-radius:0px 25px 25px 0px;*/
-	
-}
-
 
 .content-wrapper {
 	
-	/*border-radius:25px 25px 25px 25px;*/
 	background-color:black;
 	
 	
 	
+}
+
+.sidebar-toggle{
+
+color: #252525;
+
 }
 
 .content-wrapper, .right-side {
@@ -36,9 +34,8 @@
 	
 }
 
-.sidebar-toggle {
+a.sidebar-toggle {
 	
-	border-radius: 25px 0px 0px 25px;
 	background-color:#FF511E;
 	
 }
@@ -52,7 +49,6 @@
 
 #sidebarCollapsed {
 	
-	border-radius: 0px 25px 25px 25px;
 	border-color:#3d3d3d;
 	border-style:solid;
 	background-color:#FF511E;

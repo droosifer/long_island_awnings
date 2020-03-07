@@ -6,13 +6,39 @@ library('scales')
 library('ggplot2')
 library('magrittr')
 library('dplyr')
+library('DT')
+library('leaflet')
+
+
+##for download button
+myModal <- function() {
+   div(id = "test",
+       modalDialog(downloadButton("download1","Download Sales Dataset"),
+                   easyClose = TRUE, title = "Download Table")
+   )
+}
+
 
 shinyServer(function(input, output) {
    
+   observeEvent(input$test, {
+      print("hello")
+      showModal(myModal())
+   })
+   
+   
+   output$download1 <- downloadHandler(
+      filename = function() {
+         paste("data-", Sys.Date(), ".csv", sep="")
+      },
+      content = function(file) {
+         write.csv(sales, file)
+      }
+   )
+   
    
    sales <- data %>%
-      mutate_each(as.numeric, 8:11) %>%
-      mutate(Town = as.character(Town))
+      mutate_each(as.numeric, 10:13)
    
    
    sales$Month_Yr <- format(as.Date(sales$Date), "%Y-%m")
@@ -137,10 +163,48 @@ shinyServer(function(input, output) {
          arrange(desc(gross_per_transaction)) %>%
          top_n(5,gross_per_transaction) %>%
          ggplot(aes(x = Town, y = gross_per_transaction, fill = Town)) + 
-         geom_bar(stat = 'identity')
+         geom_bar(stat = 'identity') +
+         theme(plot.background = element_rect(fill = '#3d3d3d'),
+               axis.text = element_text(color = 'white'),
+               axis.title = element_text(color = 'white'))
       
       
    })
    
+   output$sales_map <- renderLeaflet({
+      
+      
+      sales %>% 
+         filter(Town == input$town_map_selection) %>% 
+         leaflet() %>% 
+         addTiles() %>% 
+         setView(-73.4350, 40.7891,  zoom = 9) %>% 
+         addMarkers(~lng, ~lat, label = ~as.character(Order_Category))
+      
+      
+   })
+   
+   
+   output$data_table <- renderDT(
+      
+      datatable(sales,
+                          extensions = 'Buttons',
+                          options = list(
+                             dom = 'Bfrtip',
+                             buttons = list(
+                                "copy",
+                                list(
+                                   extend = "collection",
+                                   text = 'download entire dataset',
+                                   action = DT::JS("function ( e, dt, node, config ) {
+                                    Shiny.setInputValue('test', true, {priority: 'event'});
+}")
+                                )
+                             )
+                          )
+      ) %>% 
+         formatStyle(columns = 1:ncol(sales), color = "black")
+      
+   )
 
 })
